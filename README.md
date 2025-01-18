@@ -1,2 +1,2 @@
 # Machine-Learning
-This repository contains the machine learning lab exercise 
+This repository contains my machine learning lab exercise 
