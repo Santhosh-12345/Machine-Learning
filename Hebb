@@ -1,0 +1,28 @@
+import numpy as np
+
+# Define inputs and expected outputs (Truth Table for AND Gate as an example)
+x = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])  # Inputs (x1, x2)
+y = np.array([0, 0, 0, 1])  # Output (AND Gate)
+
+# Convert 0s to -1s (Bipolar Representation)
+x = np.where(x == 0, -1, 1)
+y = np.where(y == 0, -1, 1)
+
+# Initialize weights and bias to 0
+w = np.zeros(2)  # Weights for x1 and x2
+b = 0            # Bias
+
+# Hebbian Learning Rule: Update weights
+for i in range(len(x)):
+    w += x[i] * y[i]  # Update weights
+    b += y[i]         # Update bias
+
+# Print final weights
+print(f"Final Weights: {w}")
+print(f"Final Bias: {b}")
+
+# Test the perceptron
+for i in range(len(x)):
+    net_input = np.dot(x[i], w) + b
+    output = 1 if net_input > 0 else 0  # Convert back to 0/1
+    print(f"Input: {x[i]} → Output: {output}")
