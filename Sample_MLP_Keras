@@ -1,0 +1,55 @@
+data = pd.read_csv(filename)
+data.columns = data.columns.str.strip()
+print(data.columns)
+print("Data before Transformation\n", data.head(10))
+le = LabelEncoder()
+data['Classes'] = le.fit_transform(data['Classes'])
+print("Data after Transformation\n", data.head(10))
+# for col in data.columns[:-1]:
+#     data[col] = pd.to_numeric(data[col], errors='coerce').fillna(0)
+
+print("Data before Scaling\n", data.head())
+scale = StandardScaler()
+input_cols = data.columns[:-1]
+data[input_cols] = scale.fit_transform(data[input_cols])
+
+print("Data after Scaling\n", data.head())
+
+x =data.values[:, :-1]
+y =data.values[:, -1]
+
+# Train-Test Split
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=11)
+
+# Build Neural Network
+model = Sequential()
+model.add(Dense(3, input_dim=x_train.shape[1], activation='sigmoid'))
+model.add(Dense(1, activation='sigmoid'))
+
+# Compile the Model
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+
+# Train the Model
+history = model.fit(x_train, y_train, epochs=150, batch_size=32, verbose=0)
+
+# Predict
+y_pred = (model.predict(x_test) > 0.5).astype("int32")
+
+# Evaluation
+cm = confusion_matrix(y_test, y_pred)
+print("Confusion Matrix\n", cm)
+print("Classification Report\n", classification_report(y_test, y_pred))
+
+# Print Weights and Biases
+model.summary()
+weights = model.get_weights()
+print("Weights and Biases:\n", weights)
+
+# Plot Loss Curve
+plt.plot(history.history['loss'])
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.title('Keras MLP Loss Curve')
+plt.show()
