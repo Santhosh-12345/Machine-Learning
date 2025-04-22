@@ -1,0 +1,79 @@
+import numpy as np
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import confusion_matrix, accuracy_score
+# Load dataset
+df = pd.read_csv('PlayTennis.csv')
+print(df.head())
+# Encode categorical features
+le = LabelEncoder()
+for i in df.columns:
+    if df[i].dtype == 'object':
+        df[i] = le.fit_transform(df[i])
+
+# Split input and output
+x = df.values[:, :-1]
+y = df.values[:, -1]
+
+# Train-test split
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+
+# Build Decision Tree with entropy and depth limit
+model = DecisionTreeClassifier(criterion='entropy', random_state=42, max_depth=3)
+model.fit(x_train, y_train)
+
+# Predict
+y_predict = model.predict(x_test)
+
+# Results
+print('Actual Values\n', y_test)
+print('Predicted Values', y_predict)
+print("Confusion Matrix\n", confusion_matrix(y_test, y_predict))
+print("Accuracy: ", accuracy_score(y_test, y_predict))
+print('\n')
+
+# Feature Importance
+feature_importance = model.feature_importances_
+feature_names = df.columns[:-1]
+for name, feature in zip(feature_names, feature_importance):
+    print(f'{name}: {feature:.4f}')
+
+# Plotting the tree
+plt.figure(figsize=(20, 15))
+plot_tree(model, class_names=['No','Yes'], feature_names=df.columns[:-1], filled=True)
+plt.title("Decision Tree - Play Tennis Dataset")
+plt.show()
+
+
+
+
+import numpy as np
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier,plot_tree
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix,accuracy_score
+df = pd.read_csv('diabetes.csv')
+print(df.head())
+x=df.values[:,:-1]
+y=df.values[:,-1]
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.3,random_state=42)
+model=DecisionTreeClassifier(criterion='entropy',random_state=42,max_depth=3)
+model.fit(x_train,y_train)
+y_predict=model.predict(x_test)
+print('Actual Values\n',y_test)
+print('Predicted Values',y_predict)
+
+print("Confusion Matrix\n",confusion_matrix(y_test,y_predict))
+print("Accuracy: ",accuracy_score(y_test,y_predict))
+print('\n')
+feature_importance=model.feature_importances_
+feature_names=df.columns[:-1]
+for name,feature in zip(feature_names,feature_importance):
+    print(f'{name}:{feature}')
+plt.figure(figsize=(15,10))
+plot_tree(model,class_names=['No Diabetes','Diabetes'],feature_names=df.columns[:-1],filled=True)
+plt.show()
