@@ -1,0 +1,38 @@
+import numpy as np
+import random
+from scipy.optimize import differential_evolution
+def objective_function(x):
+    return -(2 * x**2 - 3 * x + 10)
+bounds = [(1, 19)]
+def genetic_algorithm():
+    population = np.array([2, 8, 5, 11])
+    generations = int(input("Enter the number of generations: "))
+    print("\nStarting Genetic Algorithm\n")
+    for gen in range(1, generations + 1):
+        fitness = np.array([objective_function(x) for x in population])
+        avg_fitness = np.mean(fitness)
+        expected_probabilities = fitness / avg_fitness
+        min_index = np.argmin(fitness)
+        max_index = np.argmax(fitness)
+        population[min_index] = population[max_index]
+        parent1, parent2 = np.random.choice(population, size=2, replace=False)
+        bin1 = format(int(parent1), '05b')
+        bin2 = format(int(parent2), '05b')
+        point1, point2 = sorted(random.sample(range(len(bin1)), 2))
+        offspring1 = bin1[:point1] + bin2[point1:point2] + bin1[point2:]
+        offspring2 = bin2[:point1] + bin1[point1:point2] + bin2[point2:]
+        offspring1 = int(offspring1, 2)
+        offspring2 = int(offspring2, 2)
+        sorted_indices = np.argsort(fitness)
+        population[sorted_indices[0]] = offspring1
+        population[sorted_indices[1]] = offspring2
+        population = np.clip(population, 1, 19)
+        best_x = population[np.argmax([objective_function(x) for x in population])]
+        best_f = -objective_function(best_x)
+        print(f"Generation {gen}: Population = {population}, Best x = {best_x}, Best f(x) = {best_f}")
+    print("\nFinal Best Solution: x = {}, f(x) = {}".format(best_x, best_f))
+genetic_algorithm()
+result = differential_evolution(objective_function, bounds)
+best_x_scipy = result.x[0]
+best_f_scipy = -result.fun
+print(f"\nBest using SciPy: x = {best_x_scipy:.4f}, f(x) = {best_f_scipy:.4f}")
